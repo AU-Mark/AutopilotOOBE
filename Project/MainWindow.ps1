@@ -317,7 +317,12 @@ $formMainWindowControlHeading.Content = $Global:AutopilotOOBE.Title
 #================================================
 $Global:GetRegCurrentVersion = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
 
-$SubTitleProductName = ($Global:GetRegCurrentVersion).ProductName
+# This will no longer be accurate with Windows 11 by design as described here: 
+# https://learn.microsoft.com/en-us/answers/questions/555857/windows-11-product-name-in-registry?page=2
+# $SubTitleProductName = ($Global:GetRegCurrentVersion).ProductName
+
+# Instead we will pull the name directly from WMI with Get-CimInstance and remove Microsoft from the beginning of the string
+$SubTitleProductName = ((Get-CimInstance Win32_OperatingSystem).Caption).Replace('Microsoft ','')
 
 if ($Global:GetRegCurrentVersion.DisplayVersion -gt 0) {
     $SubTitleDisplayVersion = ($Global:GetRegCurrentVersion).DisplayVersion
